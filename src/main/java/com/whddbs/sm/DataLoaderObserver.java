@@ -6,10 +6,12 @@ import java.util.Map;
 import com.whddbs.sm.context.Observer;
 import com.whddbs.sm.dao.mariadb.BoardDaoImpl;
 import com.whddbs.sm.dao.mariadb.MemberDaoImpl;
+import com.whddbs.sm.dao.mariadb.PhotoBoardDaoImpl;
 
 public class DataLoaderObserver implements Observer {
   
   Connection con;
+  
   @Override
   public void contextInitialized(Map<String, Object> context) {
     System.out.println("데이터를 로드합니다.");
@@ -20,6 +22,8 @@ public class DataLoaderObserver implements Observer {
       
       context.put("boardDao", new BoardDaoImpl(con));
       context.put("memberDao", new MemberDaoImpl(con));
+      context.put("photoBoardDao", new PhotoBoardDaoImpl(con));
+      
     } catch (Exception e) {
       System.out.println("DataLoaderObserver 오류 : " + e.getMessage());
     }
