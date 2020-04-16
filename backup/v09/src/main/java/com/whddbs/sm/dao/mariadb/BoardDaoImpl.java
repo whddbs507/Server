@@ -8,25 +8,24 @@ import java.util.ArrayList;
 import java.util.List;
 import com.whddbs.sm.dao.BoardDao;
 import com.whddbs.sm.domain.Board;
-import com.whddbs.sm.util.ConnectionFactory;
 
 public class BoardDaoImpl implements BoardDao {
   
-  ConnectionFactory conFactory;
+  Connection con;
   
-  public BoardDaoImpl(ConnectionFactory conFactory) {
-    this.conFactory = conFactory;
+  public BoardDaoImpl(Connection con) {
+    this.con = con;
   }
   
   public int insert(Board board) throws Exception {
-    Connection con = conFactory.getConnection();
+    
     Statement stmt = con.createStatement();
     
     return stmt.executeUpdate("insert into board(titl, idx) values('" + board.getTitle() + "', '" + board.getContents() + "')");
   }
   
   public List<Board> findAll() throws Exception {
-    Connection con = conFactory.getConnection();
+    
     Statement stmt = con.createStatement();
     
     ResultSet rs = stmt.executeQuery("select no, titl, idx from board");
@@ -47,7 +46,6 @@ public class BoardDaoImpl implements BoardDao {
   }
 
   public Board findByNo(int no) throws Exception {
-    Connection con = conFactory.getConnection();
     Statement stmt = con.createStatement();
     ResultSet rs = stmt.executeQuery("select no, titl, idx from board where no=" + no);
     
@@ -64,13 +62,11 @@ public class BoardDaoImpl implements BoardDao {
   }
   
   public int delete(int no) throws Exception {
-    Connection con = conFactory.getConnection();
     Statement stmt = con.createStatement();
     return stmt.executeUpdate("delete from board where no=" + no);
   }
   
   public List<Board> findByKeyword(String keyword) throws Exception {
-    Connection con = conFactory.getConnection();
     Statement stmt = con.createStatement();
     ResultSet rs = stmt.executeQuery("select no, titl, idx from board where titl like '%" + keyword 
         + "%' or idx like '%" + keyword + "%'");

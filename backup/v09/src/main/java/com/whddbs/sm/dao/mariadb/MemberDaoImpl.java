@@ -9,32 +9,28 @@ import java.util.List;
 import com.whddbs.sm.dao.MemberDao;
 import com.whddbs.sm.domain.Board;
 import com.whddbs.sm.domain.Member;
-import com.whddbs.sm.util.ConnectionFactory;
 
 public class MemberDaoImpl implements MemberDao {
   
-  ConnectionFactory conFactory;
+  Connection con;
   
-  public MemberDaoImpl(ConnectionFactory conFactory) {
-    this.conFactory = conFactory;
+  public MemberDaoImpl(Connection con) {
+    this.con = con;
   }
   
   public int insert(Member member) throws Exception {
-    Connection con = conFactory.getConnection();
     Statement stmt = con.createStatement();
     
     return stmt.executeUpdate("insert into member(no,name,email,pw) values('" + member.getNo()+ "', '" + member.getName() + "', '" + member.getEmail() + "', '" + member.getPw() + "')");
   }
   
   public int delete(int no) throws Exception {
-    Connection con = conFactory.getConnection();
     Statement stmt = con.createStatement();
     
     return stmt.executeUpdate("delete from member where no = " + no);
   }
 
   public List<Member> findAll() throws Exception {
-    Connection con = conFactory.getConnection();
     Statement stmt = con.createStatement();
     
     ResultSet rs = stmt.executeQuery("select no,name,email,pw from member");
@@ -56,7 +52,6 @@ public class MemberDaoImpl implements MemberDao {
   }
 
   public Member findByNo(int no) throws Exception {
-    Connection con = conFactory.getConnection();
     Statement stmt = con.createStatement();
     ResultSet rs = stmt.executeQuery("select no,name,email,pw from member where no = " + no);
     if (rs.next()) {
@@ -72,7 +67,6 @@ public class MemberDaoImpl implements MemberDao {
   }
   
   public List<Member> findByKeyword(String keyword) throws Exception {
-    Connection con = conFactory.getConnection();
     Statement stmt = con.createStatement();
     ResultSet rs = stmt.executeQuery("select no, name, email, pw from member where name like '%" + keyword
     + "%' or email like '%" + keyword + "%' or pw like '%" + keyword + "%'");
