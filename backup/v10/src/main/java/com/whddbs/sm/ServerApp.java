@@ -31,8 +31,6 @@ import com.whddbs.sm.servlet.PhotoBoardDetailServlet;
 import com.whddbs.sm.servlet.PhotoBoardListServlet;
 import com.whddbs.sm.servlet.PhotoBoardSearchServlet;
 import com.whddbs.sm.servlet.Servlet;
-import com.whddbs.sm.sql.ConnectionProxy;
-import com.whddbs.sm.util.ConnectionFactory;
 
 public class ServerApp {
 
@@ -69,8 +67,6 @@ public class ServerApp {
     
     observerInitialized();
     
-    ConnectionFactory conFactory = (ConnectionFactory) context.get("connectionFactory");
-    
     BoardDao boardDao = (BoardDao) context.get("boardDao");
     MemberDao memberDao = (MemberDao) context.get("memberDao");
     PhotoBoardDao photoBoardDao = (PhotoBoardDao) context.get("photoBoardDao");
@@ -88,9 +84,11 @@ public class ServerApp {
     servletMap.put("/member/delete", new MemberDeleteServlet(memberDao));
     servletMap.put("/member/search", new MemberSearchServlet(memberDao));
     
-    servletMap.put("/photoboard/add", new PhotoBoardAddServlet(conFactory, photoBoardDao, memberDao, photoFileDao));
+    servletMap.put("/photoboard/add", new PhotoBoardAddServlet(photoBoardDao, memberDao, photoFileDao));
     servletMap.put("/photoboard/list", new PhotoBoardListServlet(photoBoardDao, memberDao));
     servletMap.put("/photoboard/detail", new PhotoBoardDetailServlet(photoBoardDao, photoFileDao));
+    servletMap.put("/photoboard/delete", new PhotoBoardDeleteServlet(photoBoardDao, photoFileDao));
+    servletMap.put("/photoboard/search", new PhotoBoardSearchServlet(photoBoardDao));
     
     try {
       ServerSocket serverSocket = new ServerSocket(7777);
@@ -99,16 +97,6 @@ public class ServerApp {
 
         executorService.submit(() -> {
           processRequest(socket);
-          
-          ConnectionProxy con = (ConnectionProxy)conFactory.removeConnection();
-          
-          if (con != null) {
-            try {
-              con.realClose();
-            } catch (Exception e) {
-              
-            }
-          }
         });
         
         if (serverStop) {
